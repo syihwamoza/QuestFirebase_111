@@ -17,6 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.LaunchedEffect
 import com.example.myfirebase.view.route.DestinasiHome
 import com.example.myfirebase.viewmodel.HomeViewModel
 import com.example.myfirebase.viewmodel.PenyediaViewModel
@@ -24,6 +25,7 @@ import com.example.myfirebase.viewmodel.StatusUiSiswa
 import com.example.myfirebase.R
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import com.example.myfirebase.modeldata.Siswa
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,6 +35,9 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel(factory = PenyediaViewModel.Factory)
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.loadSiswa()
+    }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     Scaffold(
