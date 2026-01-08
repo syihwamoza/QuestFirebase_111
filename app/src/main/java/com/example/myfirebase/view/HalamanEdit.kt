@@ -42,3 +42,7 @@ modifier = modifier
                 navigateBack()
             }
         },
+        modifier = Modifier.padding(innerPadding)
+    )
+}
+}
