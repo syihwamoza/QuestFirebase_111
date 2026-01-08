@@ -35,6 +35,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 
+import com.example.myfirebase.R
+import com.example.myfirebase.modeldata.Siswa
+import com.example.myfirebase.viewmodel.StatusUIDetail
+import com.example.myfirebase.view.route.DestinasiDetail
+import com.example.myfirebase.viewmodel.DetailViewModel
+import com.example.myfirebase.viewmodel.PenyediaViewModel
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailSiswaScreen(
@@ -42,8 +50,7 @@ fun DetailSiswaScreen(
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: DetailViewModel = viewModel(factory = PenyediaViewModel.Factory)
-)
-{
+) {
     Scaffold(
         topBar = {
             SiswaTopAppBar(
@@ -51,43 +58,43 @@ fun DetailSiswaScreen(
                 canNavigateBack = true,
                 navigateUp = navigateBack
             )
-        }
-},
-floatingActionButton = {
-    val uiState = viewModel.statusUIDetail
-    FloatingActionButton(
-        onClick = {
-            when(uiState) {
-                is StatusUIDetail.Success ->
-                    navigateToEditItem(uiState.satusiswa!!.id.toInt())
-                else -> {}
-            }
         },
-        shape = MaterialTheme.shapes.medium,
-        modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
-    ) {
-        Icon(
-            imageVector = Icons.Default.Edit,
-            contentDescription = stringResource(R.string.update),
+        floatingActionButton = {
+            val uiState = viewModel.statusUIDetail
+            FloatingActionButton(
+                onClick = {
+                    when(uiState) {
+                        is StatusUIDetail.Success ->
+                            navigateToEditItem(uiState.satusiswa!!.id.toInt())
+                        else -> {}
+                    }
+                },
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = stringResource(R.string.update),
+                )
+            }
+        }, modifier = modifier
+    ) { innerPadding ->
+        val coroutineScope = rememberCoroutineScope()
+        BodyDetailDataSiswa(
+            statusUIDetail = viewModel.statusUIDetail,
+            onDelete = {
+                coroutineScope.launch {
+                    viewModel.hapusSatuSiswa()
+                    navigateBack()
+                }
+            },
+            modifier = Modifier
+                .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
         )
     }
-}, modifier = modifier
-) { innerPadding ->
-    val coroutineScope = rememberCoroutineScope()
-    BodyDetailDataSiswa(
-        statusUIDetail = viewModel.statusUIDetail,
-        onDelete = {
-            coroutineScope.launch {
-                viewModel.hapusSatuSiswa()
-                navigateBack()
-            }
-        },
-        modifier = Modifier
-            .padding(innerPadding)
-            .verticalScroll(rememberScrollState())
-    )
 }
-}
+
 @Composable
 private fun BodyDetailDataSiswa(
     statusUIDetail: StatusUIDetail,
@@ -106,26 +113,26 @@ private fun BodyDetailDataSiswa(
             )
             else -> {}
         }
-
-    }
-    OutlinedButton(
-        onClick = { deleteConfirmationRequired = true },
-        shape = MaterialTheme.shapes.small,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text(stringResource(R.string.delete))
-    }
-    if (deleteConfirmationRequired) {
-        DeleteConfirmationDialog(
-            onDeleteConfirm = {
-                deleteConfirmationRequired = false
-                onDelete()
-            },
-            onDeleteCancel = { deleteConfirmationRequired = false },
-            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
-        )
+        OutlinedButton(
+            onClick = { deleteConfirmationRequired = true },
+            shape = MaterialTheme.shapes.small,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(stringResource(R.string.delete))
+        }
+        if (deleteConfirmationRequired) {
+            DeleteConfirmationDialog(
+                onDeleteConfirm = {
+                    deleteConfirmationRequired = false
+                    onDelete()
+                },
+                onDeleteCancel = { deleteConfirmationRequired = false },
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+            )
+        }
     }
 }
+
 @Composable
 fun DetailDataSiswa(
     siswa: Siswa?, modifier: Modifier = Modifier
@@ -183,6 +190,7 @@ private fun BarisDetailData(
         Text(text = itemDetail, fontWeight = FontWeight.Bold)
     }
 }
+
 @Composable
 private fun DeleteConfirmationDialog(
     onDeleteConfirm: () -> Unit,
@@ -204,8 +212,3 @@ private fun DeleteConfirmationDialog(
             }
         })
 }
-}
-
-
-
-
